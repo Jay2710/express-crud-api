@@ -5,16 +5,10 @@ const getUsers = async (req, res) => {
   try {
     const [rows] = await db.query("SELECT * FROM users");
 
-    // res.status(200).json({
-    //   success: true,
-    //   data: rows,
-    // });
-      return res.json({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    database: process.env.DB_NAME,
-    passwordLoaded: !!process.env.DB_PASSWORD,
-  });
+    res.status(200).json({
+      success: true,
+      data: rows,
+    });
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -55,9 +49,6 @@ const getUserById = async (req, res) => {
 // POST /users
 const createUser = async (req, res) => {
   try {
-    console.log("GET /users called");
-    console.log(process.env.DB_HOST);
-    console.log(process.env.DB_USER);
     const { username, name, lastname } = req.body;
 
     const [result] = await db.query(

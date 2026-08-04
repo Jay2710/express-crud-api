@@ -49,6 +49,9 @@ const getUserById = async (req, res) => {
 // POST /users
 const createUser = async (req, res) => {
   try {
+    console.log("GET /users called");
+    console.log(process.env.DB_HOST);
+    console.log(process.env.DB_USER);
     const { username, name, lastname } = req.body;
 
     const [result] = await db.query(

@@ -5,10 +5,16 @@ const getUsers = async (req, res) => {
   try {
     const [rows] = await db.query("SELECT * FROM users");
 
-    res.status(200).json({
-      success: true,
-      data: rows,
-    });
+    // res.status(200).json({
+    //   success: true,
+    //   data: rows,
+    // });
+      return res.json({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    database: process.env.DB_NAME,
+    passwordLoaded: !!process.env.DB_PASSWORD,
+  });
   } catch (error) {
     res.status(500).json({
       success: false,

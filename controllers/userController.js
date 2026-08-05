@@ -1,13 +1,13 @@
-const db = require("../config/db");
+const prisma = require("../config/prisma");
 
 // GET /users
 const getUsers = async (req, res) => {
   try {
-    const [rows] = await db.query("SELECT * FROM users");
+    const users = await prisma.users.findMany();
 
     res.status(200).json({
       success: true,
-      data: rows,
+      data: users,
     });
   } catch (error) {
     res.status(500).json({
@@ -22,12 +22,13 @@ const getUserById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const [rows] = await db.query(
-      "SELECT * FROM users WHERE id = ?",
-      [id]
-    );
+    const user = await prisma.users.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
 
-    if (rows.length === 0) {
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
@@ -36,7 +37,7 @@ const getUserById = async (req, res) => {
 
     res.json({
       success: true,
-      data: rows[0],
+      data: user,
     });
   } catch (error) {
     res.status(500).json({
@@ -51,15 +52,18 @@ const createUser = async (req, res) => {
   try {
     const { username, name, lastname } = req.body;
 
-    const [result] = await db.query(
-      "INSERT INTO users (username, name, lastname) VALUES (?, ?, ?)",
-      [username, name, lastname]
-    );
+    const user = await prisma.users.create({
+      data: {
+        username,
+        name,
+        lastname,
+      },
+    });
 
     res.status(201).json({
       success: true,
       message: "User created",
-      id: result.insertId,
+      id: user.id,
     });
   } catch (error) {
     res.status(500).json({
@@ -75,19 +79,29 @@ const updateUser = async (req, res) => {
     const { id } = req.params;
     const { username, name, lastname } = req.body;
 
-    const [result] = await db.query(
-      `UPDATE users
-       SET username = ?, name = ?, lastname = ?
-       WHERE id = ?`,
-      [username, name, lastname, id]
-    );
+    const existingUser = await prisma.users.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
 
-    if (result.affectedRows === 0) {
+    if (!existingUser) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
+
+    await prisma.users.update({
+      where: {
+        id: Number(id),
+      },
+      data: {
+        username,
+        name,
+        lastname,
+      },
+    });
 
     res.json({
       success: true,
@@ -106,17 +120,24 @@ const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const [result] = await db.query(
-      "DELETE FROM users WHERE id = ?",
-      [id]
-    );
+    const existingUser = await prisma.users.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
 
-    if (result.affectedRows === 0) {
+    if (!existingUser) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
+
+    await prisma.users.delete({
+      where: {
+        id: Number(id),
+      },
+    });
 
     res.json({
       success: true,

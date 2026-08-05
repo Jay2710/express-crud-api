@@ -2,26 +2,19 @@ const prisma = require("../config/prisma");
 
 // GET /users
 const getUsers = async (req, res) => {
-    return res.json({
-    dbHost: process.env.DB_HOST,
-    databaseUrl: process.env.DATABASE_URL,
-    databaseUrlLength: process.env.DATABASE_URL?.length,
-    startsWithQuote: process.env.DATABASE_URL?.startsWith('"'),
-    endsWithQuote: process.env.DATABASE_URL?.endsWith('"'),
-  });
-  // try {
-  //   const users = await prisma.users.findMany();
+  try {
+    const users = await prisma.users.findMany();
 
-  //   res.status(200).json({
-  //     success: true,
-  //     data: users,
-  //   });
-  // } catch (error) {
-  //   res.status(500).json({
-  //     success: false,
-  //     message: error.message,
-  //   });
-  // }
+    res.status(200).json({
+      success: true,
+      data: users,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 // GET /users/:id

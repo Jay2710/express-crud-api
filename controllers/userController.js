@@ -4,9 +4,10 @@ const prisma = require("../config/prisma");
 const getUsers = async (req, res) => {
     return res.json({
     dbHost: process.env.DB_HOST,
-    databaseUrl: process.env.DATABASE_URL
-      ? process.env.DATABASE_URL.replace(/:(.*?)@/, ":********@")
-      : null,
+    databaseUrl: process.env.DATABASE_URL,
+    databaseUrlLength: process.env.DATABASE_URL?.length,
+    startsWithQuote: process.env.DATABASE_URL?.startsWith('"'),
+    endsWithQuote: process.env.DATABASE_URL?.endsWith('"'),
   });
   // try {
   //   const users = await prisma.users.findMany();
